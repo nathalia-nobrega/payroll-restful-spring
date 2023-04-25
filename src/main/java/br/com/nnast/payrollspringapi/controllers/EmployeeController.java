@@ -6,6 +6,8 @@ import br.com.nnast.payrollspringapi.exceptions.EmployeeNotFoundException;
 import br.com.nnast.payrollspringapi.repositories.EmployeeRepository;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +25,6 @@ public class EmployeeController {
         this.assembler = assembler;
     }
 
-
     @GetMapping("/employees")
     public CollectionModel<EntityModel<Employee>> findAll() throws EmployeeNotFoundException {
         List<EntityModel<Employee>> employees = repository.findAll()
@@ -35,8 +36,11 @@ public class EmployeeController {
     }
 
     @PostMapping("/employees")
-    public Employee save(@RequestBody String name, String role) {
-        return repository.save(new Employee(name, role));
+    public ResponseEntity<?> save(@RequestBody Employee employee) {
+        EntityModel<Employee> modelEmp = assembler.toModel(repository.save(employee));
+
+        return ResponseEntity.created(modelEmp.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(modelEmp);
     }
 
     @GetMapping("/employees/{id}")
@@ -46,21 +50,26 @@ public class EmployeeController {
     }
 
     @PutMapping("/employees" + "/{id}")
-    public Employee update(Employee employee, Long id) {
-        return repository.findById(id)
+    public ResponseEntity<?> update(Employee newEmployee, Long id) {
+        EntityModel<Employee> employee = repository.findById(id)
                 .map(emp -> {
-                    emp.setName(employee.getName());
-                    emp.setRole(employee.getRole());
-                    return repository.save(emp);
+                    emp.setName(newEmployee.getName());
+                    emp.setRole(newEmployee.getRole());
+                    return assembler.toModel(repository.save(emp));
                 })
                 .orElseGet(() -> {
-                    employee.setId(id);
-                    return repository.save(employee);
+                    newEmployee.setId(id);
+                    return assembler.toModel(repository.save(newEmployee));
                 });
+
+        return ResponseEntity.created(employee.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(employee);
+
     }
 
     @DeleteMapping("/employees" + "/{id}")
-    public void deleteEmployee(@PathVariable Long id) {
+    public ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
         repository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

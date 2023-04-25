@@ -10,14 +10,16 @@ import java.util.Objects;
 public class Employee {
     private @Id
     @GeneratedValue Long id;
-    private String name;
+    private String fName;
+    private String lName;
     private String role;
 
     public Employee() {
     }
 
-    public Employee(String name, String role) {
-        this.name = name;
+    public Employee(String fName, String lName, String role) {
+        this.fName = fName;
+        this.lName = lName;
         this.role = role;
     }
 
@@ -30,11 +32,29 @@ public class Employee {
     }
 
     public String getName() {
-        return name;
+        return this.fName + " " + this.lName;
     }
 
     public void setName(String name) {
-        this.name = name;
+        String[] parts = name.split(" ");
+        this.fName = parts[0];
+        this.lName = parts[1];
+    }
+
+    public String getfName() {
+        return fName;
+    }
+
+    public void setfName(String fName) {
+        this.fName = fName;
+    }
+
+    public String getlName() {
+        return lName;
+    }
+
+    public void setlName(String lName) {
+        this.lName = lName;
     }
 
     public String getRole() {
@@ -62,7 +82,8 @@ public class Employee {
     public String toString() {
         return "Employee{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", fName='" + fName + '\'' +
+                ", lName='" + lName + '\'' +
                 ", role='" + role + '\'' +
                 '}';
     }
