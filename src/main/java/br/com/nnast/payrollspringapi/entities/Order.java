@@ -8,10 +8,8 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 @Entity
-@Table(name = "ORDERS")
 @Data
 @NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Order {
     private @Id
     @GeneratedValue Long id;

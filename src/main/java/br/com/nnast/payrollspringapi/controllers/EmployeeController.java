@@ -2,13 +2,18 @@ package br.com.nnast.payrollspringapi.controllers;
 
 import br.com.nnast.payrollspringapi.assemblers.EmployeeModelAssembler;
 import br.com.nnast.payrollspringapi.entities.Employee;
+import br.com.nnast.payrollspringapi.entities.ResourceSupport;
 import br.com.nnast.payrollspringapi.exceptions.EmployeeNotFoundException;
 import br.com.nnast.payrollspringapi.repositories.EmployeeRepository;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 public class EmployeeController {
@@ -18,6 +23,18 @@ public class EmployeeController {
     public EmployeeController(EmployeeRepository repository, EmployeeModelAssembler assembler) {
         this.repository = repository;
         this.assembler = assembler;
+    }
+
+    // Root node
+    @GetMapping("/")
+    public RepresentationModel<?> rootResource() {
+        RepresentationModel<?> rootResource = new RepresentationModel<>();
+        rootResource.add(
+                linkTo(methodOn(EmployeeController.class).rootResource()).withSelfRel(),
+                linkTo(methodOn(EmployeeController.class).findAll()).withRel("employees")
+        );
+
+        return rootResource;
     }
 
     @GetMapping("/employees")

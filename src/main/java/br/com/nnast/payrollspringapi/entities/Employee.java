@@ -12,9 +12,7 @@ import java.util.Objects;
 
 @Data
 @Entity
-@Table(name = "EMPLOYEES")
 @NoArgsConstructor
-@JsonIgnoreProperties (ignoreUnknown = true)
 public class Employee {
     private @Id
     @GeneratedValue Long id;

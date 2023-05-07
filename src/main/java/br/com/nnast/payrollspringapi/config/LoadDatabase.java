@@ -25,9 +25,9 @@ class LoadDatabase {
             employeeRepository.save(new Employee("Frodo", "Baggins", "thief"));
             employeeRepository.findAll().forEach(employee -> LOG.info("Preloaded " + employee));
 
-            orderRepository.save(new Order("MacBook Pro", Status.COMPLETED));
+            /*orderRepository.save(new Order("MacBook Pro", Status.COMPLETED));
             orderRepository.save(new Order("iPhone", Status.IN_PROGRESS));
-            orderRepository.findAll().forEach(order -> LOG.info("Preloaded: " + order));
+            orderRepository.findAll().forEach(order -> LOG.info("Preloaded: " + order));*/
         };
     }
 }
