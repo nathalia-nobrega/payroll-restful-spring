@@ -2,7 +2,6 @@ package br.com.nnast.payrollspringapi.controllers;
 
 import br.com.nnast.payrollspringapi.assemblers.EmployeeModelAssembler;
 import br.com.nnast.payrollspringapi.entities.Employee;
-import br.com.nnast.payrollspringapi.entities.ResourceSupport;
 import br.com.nnast.payrollspringapi.exceptions.EmployeeNotFoundException;
 import br.com.nnast.payrollspringapi.repositories.EmployeeRepository;
 import org.springframework.hateoas.CollectionModel;
@@ -27,8 +26,8 @@ public class EmployeeController {
 
     // Root node
     @GetMapping("/")
-    public RepresentationModel<?> rootResource() {
-        RepresentationModel<?> rootResource = new RepresentationModel<>();
+    public RepresentationModel<EntityModel<Employee>> rootResource() {
+        RepresentationModel<EntityModel<Employee>> rootResource = new RepresentationModel<>();
         rootResource.add(
                 linkTo(methodOn(EmployeeController.class).rootResource()).withSelfRel(),
                 linkTo(methodOn(EmployeeController.class).findAll()).withRel("employees")
@@ -53,7 +52,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/employees")
-    public ResponseEntity<?> save(@RequestBody Employee employee) {
+    public ResponseEntity<EntityModel<Employee>> save(@RequestBody Employee employee) {
         EntityModel<Employee> modelEmp = assembler.toModel(repository.save(employee));
 
         return ResponseEntity.created(modelEmp.getRequiredLink(IanaLinkRelations.SELF).toUri())
@@ -61,7 +60,7 @@ public class EmployeeController {
     }
 
     @PutMapping("/employees" + "/{id}")
-    public ResponseEntity<?> update(Employee newEmployee, Long id) {
+    public ResponseEntity<EntityModel<Employee>> update(Employee newEmployee, Long id) {
         EntityModel<Employee> employee = repository.findById(id)
                 .map(emp -> {
                     emp.setName(newEmployee.getName());
@@ -79,7 +78,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/employees" + "/{id}")
-    public ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<Employee>> deleteEmployee(@PathVariable Long id) {
         repository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
