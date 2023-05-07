@@ -5,7 +5,6 @@ import br.com.nnast.payrollspringapi.entities.Order;
 import br.com.nnast.payrollspringapi.entities.Status;
 import br.com.nnast.payrollspringapi.exceptions.OrderNotFoundException;
 import br.com.nnast.payrollspringapi.repositories.OrderRepository;
-import org.apache.catalina.connector.Response;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
@@ -14,8 +13,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -32,17 +29,18 @@ public class OrderController {
     }
 
     @GetMapping("/orders")
-    public CollectionModel<EntityModel<Order>> findAll() {
-        List<EntityModel<Order>> orderModels = repository.findAll()
-                .stream().map(assembler::toModel)
-                .toList();
-        return CollectionModel.of(orderModels, linkTo(methodOn(OrderController.class).findAll()).withSelfRel());
+    public ResponseEntity<CollectionModel<EntityModel<Order>>> findAll() {
+        return ResponseEntity.ok(
+                this.assembler.toCollectionModel(repository.findAll())
+        );
     }
 
     @GetMapping("/orders/{id}")
-    public EntityModel<Order> findOne(@PathVariable Long id) {
-        return assembler.toModel(repository.findById(id)
-                .orElseThrow(() -> new OrderNotFoundException(id)));
+    public ResponseEntity<EntityModel<Order>> findOne(@PathVariable Long id) {
+        return ResponseEntity.ok(
+                this.assembler.toModel(repository.findById(id)
+                        .orElseThrow(() -> new OrderNotFoundException(id)))
+        );
     }
 
     @PostMapping("/orders")
@@ -56,7 +54,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/orders/{id}/cancel")
-    public ResponseEntity<?> cancel (@PathVariable Long id) {
+    public ResponseEntity<?> cancel(@PathVariable Long id) {
         Order order = repository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException(id));
 

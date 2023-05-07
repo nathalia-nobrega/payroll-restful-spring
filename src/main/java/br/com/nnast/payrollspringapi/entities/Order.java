@@ -7,12 +7,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 @Entity
+@Table(name = "ORDERS")
 @Data
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Table(name = "CUSTOMER_ORDER")
 public class Order {
     private @Id
     @GeneratedValue Long id;

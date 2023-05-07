@@ -10,9 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
+import org.springframework.stereotype.Component;
 
 @Configuration
+@Component
 class LoadDatabase {
 
     private static final Logger LOG = LoggerFactory.getLogger(LoadDatabase.class);

@@ -10,11 +10,6 @@ import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 @RestController
 public class EmployeeController {
     private final EmployeeRepository repository;
@@ -26,13 +21,18 @@ public class EmployeeController {
     }
 
     @GetMapping("/employees")
-    public CollectionModel<EntityModel<Employee>> findAll() throws EmployeeNotFoundException {
-        List<EntityModel<Employee>> employees = repository.findAll()
-                .stream()
-                .map(assembler::toModel)
-                .toList();
+    public ResponseEntity<CollectionModel<EntityModel<Employee>>> findAll() {
+        return ResponseEntity.ok(
+                assembler.toCollectionModel(this.repository.findAll())
+        );
+    }
 
-        return CollectionModel.of(employees, linkTo(methodOn(EmployeeController.class).findAll()).withSelfRel());
+    @GetMapping("/employees/{id}")
+    public ResponseEntity<EntityModel<Employee>> findOne(@PathVariable Long id) {
+        return ResponseEntity.ok(
+                assembler.toModel(this.repository.findById(id)
+                        .orElseThrow(() -> new EmployeeNotFoundException(id)))
+        );
     }
 
     @PostMapping("/employees")
@@ -41,12 +41,6 @@ public class EmployeeController {
 
         return ResponseEntity.created(modelEmp.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(modelEmp);
-    }
-
-    @GetMapping("/employees/{id}")
-    public EntityModel<Employee> findOne(@PathVariable Long id) {
-        return assembler.toModel(repository.findById(id)
-                .orElseThrow(() -> new EmployeeNotFoundException(id)));
     }
 
     @PutMapping("/employees" + "/{id}")
